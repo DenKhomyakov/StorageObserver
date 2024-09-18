@@ -32,5 +32,4 @@ qint64 getSize(const QString& path) {
     return 0;
 }
 
-
 #endif // CALCULATIONSTRATEGY_H
