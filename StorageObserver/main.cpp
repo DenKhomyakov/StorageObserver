@@ -44,9 +44,8 @@ int main(int argc, char *argv[])
         std::cin >> directorySrt;
 
         QString directory = QString::fromStdString(directorySrt);
-        QDir dir(directory);
 
-        if (!dir.exists()) {
+        if (!QDir(directory).exists()) {
             std::cerr << "Directory does not exist. Enter a valid directory path!" << std::endl;
             continue;
         }
@@ -76,10 +75,18 @@ int main(int argc, char *argv[])
             printResults(results, totalSize);
 
             delete calculation;
+
+            int choice;
+
+            std::cout << "Enter 0 to exit, or any other number to continue: ";
+            std::cin >> choice;
+
+            if (choice == 0) {
+                return a.exec();
+            }
+
             break;
         }
-
-        break;
     }
 
     return a.exec();
