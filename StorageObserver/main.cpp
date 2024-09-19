@@ -1,5 +1,10 @@
 #include <QCoreApplication>
 #include <QTextStream>
+#include <iostream>
+
+#include "CalculationStrategy.h"
+#include <ByFolderCalculationStrategy.h>
+#include <ByFileTypeCalculationStrategy.h>
 
 void printResults(const QMap<QString, qint64>& results, qint64 totalSize) {
     QTextStream out(stdout);
@@ -28,6 +33,54 @@ void printResults(const QMap<QString, qint64>& results, qint64 totalSize) {
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+
+    setlocale(LC_ALL, "Rus");
+
+    std::string directorySrt;
+    int strategy;
+
+    while (true) {
+        std::cout << "Enter the directory path: ";
+        std::cin >> directorySrt;
+
+        QString directory = QString::fromStdString(directorySrt);
+        QDir dir(directory);
+
+        if (!dir.exists()) {
+            std::cerr << "Directory does not exist. Enter a valid directory path!" << std::endl;
+            continue;
+        }
+
+        while (true) {
+            std::cout << "Enter the strategy (1 for ByFolder, 2 for ByFileType): ";
+            std::cin >> strategy;
+
+            CalculationStrategy* calculation = nullptr;
+
+            switch(strategy) {
+            case 1:
+                calculation = new ByFolderCalculationStrategy();
+                break;
+
+            case 2:
+                calculation = new ByFileTypeCalculationStrategy();
+                break;
+
+            default:
+                std::cerr << "Invalid strategy! Use 1 or 2." << std::endl;
+                continue;
+            }
+
+            QMap<QString, qint64> results = calculation->calculateSize(directory);
+            qint64 totalSize = getSize(directory);
+            printResults(results, totalSize);
+
+            delete calculation;
+            break;
+        }
+
+        break;
+    }
 
     return a.exec();
 }
