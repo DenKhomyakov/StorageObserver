@@ -13,7 +13,7 @@ void printResults(const QMap<QString, qint64>& results, qint64 totalSize) {
         double precentage;
 
         if (totalSize > 0) {
-            precentage = static_cast<double>(it.value() / totalSize * 100);
+            precentage = static_cast<double>(it.value()) / totalSize * 100;
         } else {
             precentage = 0;
         }
