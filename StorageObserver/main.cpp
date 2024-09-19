@@ -36,56 +36,48 @@ int main(int argc, char *argv[])
 
     setlocale(LC_ALL, "Rus");
 
-    std::string directorySrt;
+    QString directory = "../Test";
+
+    if (!QDir(directory).exists()) {
+        std::cerr << "Directory does not exist. Enter a valid directory path!" << std::endl;
+        return a.exec();
+    }
+
     int strategy;
 
     while (true) {
-        std::cout << "Enter the directory path: ";
-        std::cin >> directorySrt;
+        std::cout << "Enter the strategy (1 for ByFolder, 2 for ByFileType): ";
+        std::cin >> strategy;
 
-        QString directory = QString::fromStdString(directorySrt);
+        CalculationStrategy* calculation = nullptr;
 
-        if (!QDir(directory).exists()) {
-            std::cerr << "Directory does not exist. Enter a valid directory path!" << std::endl;
+        switch(strategy) {
+        case 1:
+            calculation = new ByFolderCalculationStrategy();
+            break;
+
+        case 2:
+            calculation = new ByFileTypeCalculationStrategy();
+            break;
+
+        default:
+            std::cerr << "Invalid strategy! Use 1 or 2." << std::endl;
             continue;
         }
 
-        while (true) {
-            std::cout << "Enter the strategy (1 for ByFolder, 2 for ByFileType): ";
-            std::cin >> strategy;
+        QMap<QString, qint64> results = calculation->calculateSize(directory);
+        qint64 totalSize = getSize(directory);
+        printResults(results, totalSize);
 
-            CalculationStrategy* calculation = nullptr;
+        delete calculation;
 
-            switch(strategy) {
-            case 1:
-                calculation = new ByFolderCalculationStrategy();
-                break;
+        int choice;
 
-            case 2:
-                calculation = new ByFileTypeCalculationStrategy();
-                break;
+        std::cout << "Enter 0 to exit, or any other number to continue: ";
+        std::cin >> choice;
 
-            default:
-                std::cerr << "Invalid strategy! Use 1 or 2." << std::endl;
-                continue;
-            }
-
-            QMap<QString, qint64> results = calculation->calculateSize(directory);
-            qint64 totalSize = getSize(directory);
-            printResults(results, totalSize);
-
-            delete calculation;
-
-            int choice;
-
-            std::cout << "Enter 0 to exit, or any other number to continue: ";
-            std::cin >> choice;
-
-            if (choice == 0) {
-                return a.exec();
-            }
-
-            break;
+        if (choice == 0) {
+            return a.exec();
         }
     }
 
